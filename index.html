@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Kalkulator</title>
+
+    <style>
+
+/* ============================
+   GLOBAL
+============================ */
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+/* ============================
+   TŁO – CANVAS
+============================ */
+
+#background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+}
+
+/* ============================
+   KALKULATOR – GLASS NEON
+============================ */
+
+.calculator {
+    width: 300px;
+    padding: 15px;
+    border-radius: 20px;
+
+    background: rgba(30, 0, 40, 0.35);
+    backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255, 0, 200, 0.4);
+    box-shadow: 0 0 25px rgba(255, 0, 200, 0.5);
+}
+
+/* ============================
+   WYŚWIETLACZ
+============================ */
+
+.display {
+    width: 100%;
+    height: 80px;
+    font-size: 42px;
+    padding: 10px 15px;
+    box-sizing: border-box;
+
+    background: rgba(40, 0, 60, 0.4);
+    backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255, 0, 200, 0.4);
+    border-radius: 12px;
+
+    color: #ff99dd;
+    text-align: right;
+    text-shadow: 0 0 10px #ff00aa;
+    margin-bottom: 15px;
+}
+
+/* ============================
+   PRZYCISKI – NEON GLASS
+============================ */
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.btn {
+    padding: 14px;
+    font-size: 20px;
+    border-radius: 12px;
+    cursor: pointer;
+
+    background: rgba(255, 0, 150, 0.12);
+    backdrop-filter: blur(8px);
+
+    border: 1px solid rgba(255, 0, 200, 0.4);
+    color: #ff66cc;
+
+    box-shadow: 0 0 12px rgba(255, 0, 200, 0.5);
+    transition: 0.2s;
+}
+
+.btn.action {
+    background: rgba(0, 120, 255, 0.15);
+    border: 1px solid rgba(0, 180, 255, 0.5);
+    color: #66cfff;
+    box-shadow: 0 0 15px rgba(0, 180, 255, 0.7);
+}
+
+.btn.operator {
+    background: rgba(180, 0, 255, 0.15);
+    border: 1px solid rgba(200, 0, 255, 0.5);
+    color: #d966ff;
+    box-shadow: 0 0 15px rgba(200, 0, 255, 0.6);
+}
+
+.btn.operator:hover {
+    background: rgba(200, 0, 255, 0.3);
+    box-shadow: 0 0 25px rgba(200, 0, 255, 1);
+}
+
+
+.btn.action:hover {
+    background: rgba(0, 150, 255, 0.3);
+    box-shadow: 0 0 25px rgba(0, 180, 255, 1);
+}
+
+
+.btn:hover {
+    background: rgba(255, 0, 200, 0.25);
+    box-shadow: 0 0 20px rgba(255, 0, 200, 0.8);
+    transform: scale(1.05);
+}
+
+.btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 25px rgba(255, 0, 200, 1);
+}
+
+
+
+    </style>
+</head>
+
+<body>
+    <div id="background"></div>
+    
+    <div class="calculator">
+        <input type="text" class="display" readonly>
+        <div class="buttons">
+            <button class="btn number" data-type="number">1</button>
+            <button class="btn number" data-type="number">2</button>
+            <button class="btn number" data-type="number">3</button>
+            <button class="btn number" data-type="number">4</button>
+            <button class="btn number" data-type="number">5</button>
+            <button class="btn number" data-type="number">6</button>
+            <button class="btn number" data-type="number">7</button>
+            <button class="btn number" data-type="number">8</button>
+            <button class="btn number" data-type="number">9</button>
+            <button class="btn number" data-type="number">0</button>
+            <button class="btn number" data-type="number">.</button>
+            <button class="btn operator" data-type="operator">+</button>
+            <button class="btn operator" data-type="operator">-</button>
+            <button class="btn operator" data-type="operator">*</button>
+            <button class="btn operator" data-type="operator">/</button>
+            <button class="btn operator" data-type="operator">%</button>
+            <button class="btn operator" data-type="operator">^</button>
+            <button class="btn operator" data-type="operator">√</button>
+            <button class="btn operator" data-type="operator">(</button>
+            <button class="btn operator" data-type="operator">)</button>
+            <button class="btn action" data-type ="action">=</button>
+            <button class="btn action" data-type="action">C</button>
+        </div>
+    </div>
+
+    <script>
+    
+    const wynik = document.querySelector("input");
+
+    const buttons = document.querySelectorAll("button");
+    buttons.forEach (btn => {
+        btn.addEventListener("click", function () {
+            if (btn.dataset.type === "number") {
+                wynik.value += btn.textContent;
+            } else if (btn.dataset.type === "operator" && btn.textContent === "^") {
+                wynik.value += "**";
+            } else if (btn.dataset.type === "operator" && btn.textContent === "√") {
+                wynik.value += "Math.sqrt";
+            } else if (btn.dataset.type === "operator") {
+                wynik.value += btn.textContent;
+            } else if (btn.textContent === "C") {
+                wynik.value = "";
+            } else if (btn.textContent === "=") {
+                wynik.value = eval(wynik.value);
+            }
+        });
+    });
+    
+    </script>
+    <script>
+/* ============================
+   ANIMOWANA SIEĆ – CYBERPUNK
+============================ */
+
+const bgCanvas = document.createElement("canvas");
+const bgCtx = bgCanvas.getContext("2d");
+document.getElementById("background").appendChild(bgCanvas);
+
+bgCanvas.width = window.innerWidth;
+bgCanvas.height = window.innerHeight;
+
+const points = [];
+
+for (let i = 0; i < 150; i++) {
+    points.push({
+        x: Math.random() * bgCanvas.width,
+        y: Math.random() * bgCanvas.height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3
+    });
+}
+
+function animateBackground() {
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+    const pulse = Math.sin(Date.now() * 0.004) * 0.5 + 0.5;
+
+    points.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > bgCanvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > bgCanvas.height) p.vy *= -1;
+
+        const alpha = 0.4 + pulse * 0.8;
+        bgCtx.fillStyle = `rgba(255, 0, 150, ${alpha})`;
+        bgCtx.beginPath();
+        bgCtx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        bgCtx.fill();
+    });
+
+    for (let i = 0; i < points.length; i++) {
+        for (let j = i + 1; j < points.length; j++) {
+            const dx = points[i].x - points[j].x;
+            const dy = points[i].y - points[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 150) {
+                bgCtx.strokeStyle = "rgba(180, 0, 255, 0.2)";
+                bgCtx.beginPath();
+                bgCtx.moveTo(points[i].x, points[i].y);
+                bgCtx.lineTo(points[j].x, points[j].y);
+                bgCtx.stroke();
+            }
+        }
+    }
+
+    requestAnimationFrame(animateBackground);
+}
+
+animateBackground();
+
+</script>
+</body>
+</html>
