@@ -16,3 +16,6 @@ The interface features glowing neon effects and smooth button interactions.
 
 ## How to Run
 Open the `index.html` file in your browser.
+
+## Live Demo
+https://majkel-shockwave.github.io/calculator-neon/
